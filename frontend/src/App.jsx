@@ -1,6 +1,9 @@
 import React, { useState, useSyncExternalStore } from 'react';
 import SubjectList from './components/SubjectList';
 import TopicList from './components/TopicList';
+import QuestionList from './components/QuestionList';
+import './App.css';
+
 
 
 function App() {
@@ -8,7 +11,7 @@ function App() {
   const [selectedTopicId, setSelectedTopicId] = useState(null);
 
   return (
-    <div style={{ padding: "2rem" }}>
+    <div>
       <h1>PastPapers</h1>
       
       <SubjectList onSelect={setSelectedSubjectId} />
@@ -18,7 +21,7 @@ function App() {
       )}
 
       {selectedTopicId && (
-        <p>Selected topic ID: {selectedTopicId}</p>
+        <QuestionList topicId={selectedTopicId} />
       )}
     </div>
   );

@@ -1,10 +1,14 @@
 from app import app, db
-from models import Subject, Topic, Question
+from models import Board, Subject, Topic, Question
 
 
 with app.app_context():
 
-    s1 = Subject(name='Physics')
+    b1 = Board(name='CIE')
+    db.session.add(b1)
+    db.session.commit()
+
+    s1 = Subject(name='Physics', board_id=b1.id)
     db.session.add(s1)
     db.session.commit()
 
@@ -15,11 +19,10 @@ with app.app_context():
     q1 = Question(
         year='2021',
         paper='1',
-        number='Q3',
-        text="State Newton's third law.",
+        number='3',
         topic_id=t1.id,
-        image_link='https://example.com/q3.png',
-        marking_scheme_link='https://example.com/q3_ms.pdf'
+        image_url='https://example.com/q3.png',
+        marking_scheme_url='https://example.com/q3_ms.pdf'
     )
     db.session.add(q1)
     db.session.commit()
