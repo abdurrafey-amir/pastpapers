@@ -1,30 +1,19 @@
-import React, { useState, useSyncExternalStore } from 'react';
-import SubjectList from './components/SubjectList';
-import TopicList from './components/TopicList';
-import QuestionList from './components/QuestionList';
-import './App.css';
-
+import React, { useState } from 'react'
+import './App.css'
+import SelectionPanel from './components/SelectionPanel'
+import QuestionList from './components/QuestionList'
 
 
 function App() {
-  const [selectedSubjectId, setSelectedSubjectId] = useState(null);
-  const [selectedTopicId, setSelectedTopicId] = useState(null);
+  const [selectedTopics, setSelectedTopics] = useState([])
 
   return (
-    <div>
+    <div className='App'>
       <h1>PastPapers</h1>
-      
-      <SubjectList onSelect={setSelectedSubjectId} />
-
-      {selectedSubjectId && (
-        <TopicList subjectId={selectedSubjectId} onSelect={setSelectedTopicId} />
-      )}
-
-      {selectedTopicId && (
-        <QuestionList topicId={selectedTopicId} />
-      )}
+      <SelectionPanel onTopicsChange={setSelectedTopics} />
+      <QuestionList topicIds={selectedTopics} />
     </div>
-  );
+  )
 }
 
-export default App;
+export default App

@@ -21,30 +21,43 @@ def get_topics(subject_id):
 
 @app.route('/api/questions/<int:topic_id>')
 def get_questions(topic_id):
-    years_param = request.args.get('year')
-    paper = request.args.get('paper', type=int)
-
-    query = Question.query.filter_by(topic_id=topic_id)
-
-    if paper is not None:
-        query = query.filter_by(paper=paper)
-
-    if years_param:
-        try:
-            year_list = [int(y) for y in years_param.split(',')]
-            query = query.filter(Question.year.in_(year_list))
-        except ValueError:
-            return jsonify({'error:': 'Invalid year format'}), 400
-        
-    questions = query.all()
-    
+    questions = Question.query.filter_by(topic_id=topic_id).all()
     return jsonify([
         {
             'id': q.id,
             'year': q.year,
             'paper': q.paper,
             'number': q.number,
-            'image_link': q.image_url,
-            'marking_scheme_link': q.marking_scheme_url
+            'image_url': q.image_url,
+            'marking_scheme_url': q.marking_scheme_url
         } for q in questions
-    ]) 
+    ])
+
+@app.route('/api/questions/filter', methods=['POST'])
+def filter_questions():
+    data = request.get_json()
+
+    topic_ids = data.get('topic_ids', [])
+    years = data.get('years', [])
+
+    query = Question.query
+
+    if topic_ids:
+        query = query.filter(Question.topic_id.in_(topic_ids))
+
+    if years:
+        query = query.filter(Question.year.in_(years))
+
+    questions = query.all()
+
+    return jsonify([
+        {
+            'id': q.id,
+            'year': q.year,
+            'paper': q.paper,
+            'number': q.number,
+            'image_url': q.image_url,
+            'marking_scheme_url': q.marking_scheme_url,
+            'topic_id': q.topic_id
+        } for q in questions
+    ])
