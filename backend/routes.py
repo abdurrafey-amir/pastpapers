@@ -125,3 +125,43 @@ def generate_pdf():
     pdf_buffer.seek(0)
 
     return send_file(pdf_buffer, mimetype='application/pdf', download_name='questions.pdf')
+
+@app.route('/api/generate_markscheme', methods=['POST'])
+def generate_markscheme():
+    data = request.get_json()
+    
+    topic_ids = data.get('topic_ids', [])
+    paper = data.get('paper')
+    years = data.get('years', [])
+
+    query = Question.query
+
+    if topic_ids:
+        query = query.filter(Question.topic_id.in_(topic_ids))
+    if paper:
+        query = query.filter(Question.paper == str(paper))
+    if years:
+        query = query.filter(Question.year.in_(years))
+
+    questions = query.order_by(Question.year, Question.paper, Question.number).all()
+
+    if not questions:
+        return jsonify({'error': 'No questions found'}), 404
+    
+    images = []
+    for q in questions:
+        try:
+            img_response = requests.get(q.marking_scheme_url, stream=True)
+            img = Image.open(img_response.raw).convert('RGB')
+            images.append(img)
+        except Exception as e:
+            print(f'Failed to fetch image: {q.marking_scheme_url} - {e}')
+
+    if not images:
+        return jsonify({'error': 'No valid images found'}), 400
+    
+    pdf_buffer = io.BytesIO()
+    images[0].save(pdf_buffer, save_all=True, append_images=images[1:], format='PDF')
+    pdf_buffer.seek(0)
+
+    return send_file(pdf_buffer, mimetype='application/pdf', download_name='markscheme.pdf')

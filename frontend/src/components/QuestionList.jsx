@@ -1,31 +1,35 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
+import './QuestionList.css'
 
 
-function QuestionList({ topicIds }) {
+function QuestionList({ topicIds, paperFilter, selectedYears }) {
     const [questions, setQuestions] = useState([])
-
     useEffect(() => {
         if (topicIds.length > 0) {
-            axios.post('/api/questions/filter', { topic_ids: topicIds }).then((res) => {
+            axios.post('/api/questions/filter', {
+                topic_ids: topicIds,
+                paper: paperFilter,
+                years: selectedYears,
+            }).then((res) => {
                 setQuestions(res.data)
             })
         } else {
             setQuestions([])
         }
-    }, [topicIds])
+    }, [topicIds, paperFilter, selectedYears])
 
     return (
-        <div>
-            <h3>Filtered Questions</h3>
+        <div className='question-list'>
+            <h3 className='question-list-title'>Filtered Questions</h3>
             {questions.length === 0 ? (
-                <p>No questions selected.</p>
+                <p className='no-questions'>No questions selected.</p>
             ) : (
-                <ul>
+                <ul className='question-items'>
                     {questions.map((q) => (
-                        <li key={q.id}>
-                            <img src='{q.image_url' alt={`Question ${q.number}`} width='300' />
-                            <p>Year: {q.year}, Paper: {q.paper}, Question: {q.number}</p>
+                        <li className='question-item' key={q.id}>
+                            <img src={q.image_url} alt={`Question ${q.number}`} className='question-image' />
+                            <p className='question-meta'>Year: {q.year}, Paper: {q.paper}, Question: {q.number}</p>
                         </li>
                     ))}
                 </ul>

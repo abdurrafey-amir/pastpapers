@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
+import './SelectionPanel.css'
 
 
 function SelectionPanel({ onTopicsChange }) {
     const [boards, setBoards] = useState([])
     const [subjects, setSubjects] = useState([])
     const [topics, setTopics] = useState([])
+    const [paperNumbers, setPaperNumbers] = useState([])
 
     const [selectedBoard, setSelectedBoard] = useState(null)
     const [selectedSubject, setSelectedSubject] = useState(null)
     const [selectedTopics, setSelectedTopics] = useState([])
+    const [selectedPaper, SetSelectedPaper] = useState('')
 
     useEffect(() => {
         axios.get('/api/boards').then((res) => {
@@ -35,12 +38,19 @@ function SelectionPanel({ onTopicsChange }) {
                 setTopics(res.data)
                 setSelectedTopics([])
             })
+            axios.get(`/api/papers/${selectedSubject}`).then((res) => {
+                setPaperNumbers(res.data)
+                SetSelectedPaper('')
+            })
         }
     }, [selectedSubject])
 
     useEffect(() => {
-        onTopicsChange(selectedTopics)
-    }, [selectedTopics])
+        onTopicsChange({
+            topics: selectedTopics,
+            paper: selectedPaper
+        })
+    }, [selectedTopics, selectedPaper])
 
     const toggleTopic = (topicId) => {
         setSelectedTopics((prev) =>
@@ -51,32 +61,34 @@ function SelectionPanel({ onTopicsChange }) {
     }
 
     return (
-        <div>
-            <h3>Select Board</h3>
-            <select onChange={(e) => setSelectedBoard(parseInt(e.target.value))}>
-                <option value=''>-- Select Board --</option>
-                {boards.map((board) => (
-                    <option key={board.id} value={board.id}>{board.name}</option>
-                ))}
-            </select>
+        <div className='selection-panel'>
+            <div className='dropdown-group'>
+                <h3 className='dropdown-label'>Select Board</h3>
+                <select className='dropdown' onChange={(e) => setSelectedBoard(parseInt(e.target.value))}>
+                    <option value=''>-- Select Board --</option>
+                    {boards.map((board) => (
+                        <option key={board.id} value={board.id}>{board.name}</option>
+                    ))}
+                </select>
+            </div>
 
             {subjects.length > 0 && (
-                <>
-                    <h3>Select Subject</h3>
-                    <select onChange={(e) => setSelectedSubject(parseInt(e.target.value))}>
+                <div className='dropdown-group'>
+                    <h3 className='dropdown-label'>Select Subject</h3>
+                    <select className='dropdown' onChange={(e) => setSelectedSubject(parseInt(e.target.value))}>
                         <option value="">-- Select Subject --</option>
                         {subjects.map((subject) => (
                             <option key={subject.id} value={subject.id}>{subject.name}</option>
                         ))}
                     </select>
-                </>
+                </div>
             )}
 
             {topics.length > 0 && (
-                <>
-                    <h3>Select Topics</h3>
+                <div className='topics-group'>
+                    <h3 className='dropdown-label'>Select Topics</h3>
                     {topics.map((topic) => (
-                        <div key={topic.id}>
+                        <div className='topic-checkbox' key={topic.id}>
                             <label>
                                 <input
                                     type='checkbox'
@@ -88,7 +100,19 @@ function SelectionPanel({ onTopicsChange }) {
                             </label>
                         </div>
                     ))}
-                </>
+                </div>
+            )}
+
+            {paperNumbers.length > 0 && (
+                <div className='dropdown-group'>
+                    <h3 className='dropdown-label'>Select Paper Number</h3>
+                    <select className='dropdown' value={selectedPaper} onChange={(e) => SetSelectedPaper(e.target.value)}>
+                        <option value=''>-- Any Paper --</option>
+                        {paperNumbers.map((p) => (
+                            <option key={p} value={p}>{p}</option>
+                        ))}
+                    </select>
+                </div>
             )}
         </div>
     )

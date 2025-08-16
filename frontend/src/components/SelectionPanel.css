@@ -1,0 +1,58 @@
+.selection-panel {
+    background-color: #1e1e1e;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0, 4px, 12px, rgba(255, 255, 255, 0.06);
+    max-width: 500px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.dropdown-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.dropdown-label {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #f1f1f1;
+}
+
+.dropdown {
+    padding: 10px;
+    font-size: 1rem;
+    border-radius: 8px;
+    border: 1px solid #555;
+    background-color: #2a2a2a;
+    color: #f1f1f1;
+    transition: border-color 0.2s ease;
+}
+
+.dropdown:focus {
+    outline: none;
+    border-color: #3399ff;
+}
+
+.topics-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.topic-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.95rem;
+    color: #e0e0e0;
+}
+
+.topic-checkbox input[type='checkbox'] {
+    accent-color: #007bff;
+    transform: scale(1.1);
+    cursor: pointer;
+}
