@@ -3,7 +3,7 @@ import axios from 'axios'
 import './SelectionPanel.css'
 
 
-function SelectionPanel({ onTopicsChange }) {
+function SelectionPanel({ onSelectionChange }) {
     const [boards, setBoards] = useState([])
     const [subjects, setSubjects] = useState([])
     const [topics, setTopics] = useState([])
@@ -23,7 +23,7 @@ function SelectionPanel({ onTopicsChange }) {
 
     useEffect(() => {
         if (selectedBoard) {
-            axios.get(`/api/subjects/${selectedBoard}`).then((res) => {
+            axios.get(`/api/subjects/${selectedBoard.id}`).then((res) => {
                 setSubjects(res.data)
                 setSelectedSubject(null)
                 setTopics([])
@@ -34,11 +34,11 @@ function SelectionPanel({ onTopicsChange }) {
 
     useEffect(() => {
         if (selectedSubject) {
-            axios.get(`/api/topics/${selectedSubject}`).then((res) => {
+            axios.get(`/api/topics/${selectedSubject.id}`).then((res) => {
                 setTopics(res.data)
                 setSelectedTopics([])
             })
-            axios.get(`/api/papers/${selectedSubject}`).then((res) => {
+            axios.get(`/api/papers/${selectedSubject.id}`).then((res) => {
                 setPaperNumbers(res.data)
                 SetSelectedPaper('')
             })
@@ -46,11 +46,13 @@ function SelectionPanel({ onTopicsChange }) {
     }, [selectedSubject])
 
     useEffect(() => {
-        onTopicsChange({
+        onSelectionChange({
+            board: selectedBoard,
+            subject: selectedSubject,
             topics: selectedTopics,
             paper: selectedPaper
         })
-    }, [selectedTopics, selectedPaper])
+    }, [selectedBoard, selectedSubject, selectedTopics, selectedPaper])
 
     const toggleTopic = (topicId) => {
         setSelectedTopics((prev) =>
@@ -64,7 +66,10 @@ function SelectionPanel({ onTopicsChange }) {
         <div className='selection-panel'>
             <div className='dropdown-group'>
                 <h3 className='dropdown-label'>Select Board</h3>
-                <select className='dropdown' onChange={(e) => setSelectedBoard(parseInt(e.target.value))}>
+                <select className='dropdown' onChange={(e) => {
+                    const board = boards.find((b) => b.id === parseInt(e.target.value))
+                    setSelectedBoard(board || null)
+                }}>
                     <option value=''>-- Select Board --</option>
                     {boards.map((board) => (
                         <option key={board.id} value={board.id}>{board.name}</option>
@@ -75,7 +80,10 @@ function SelectionPanel({ onTopicsChange }) {
             {subjects.length > 0 && (
                 <div className='dropdown-group'>
                     <h3 className='dropdown-label'>Select Subject</h3>
-                    <select className='dropdown' onChange={(e) => setSelectedSubject(parseInt(e.target.value))}>
+                    <select className='dropdown' onChange={(e) => {
+                        const subject = subjects.find((s) => s.id === parseInt(e.target.value))
+                        setSelectedSubject(subject || null)
+                    }}>
                         <option value="">-- Select Subject --</option>
                         {subjects.map((subject) => (
                             <option key={subject.id} value={subject.id}>{subject.name}</option>
@@ -93,8 +101,8 @@ function SelectionPanel({ onTopicsChange }) {
                                 <input
                                     type='checkbox'
                                     value={topic.id}
-                                    checked={selectedTopics.includes(topic.id)}
-                                    onChange={() => toggleTopic(topic.id)}
+                                    checked={selectedTopics.some((t) => t.id === topic.id)}
+                                    onChange={() => toggleTopic(topic)}
                                 />
                                 {topic.name}
                             </label>

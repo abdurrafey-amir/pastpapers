@@ -1,0 +1,48 @@
+.summary-card {
+    background-color: #1e1e1e;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 20px;
+    color: #e0e0e0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.summary-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: #ffffff;
+    border-bottom: 1px solid #333;
+    padding-bottom: 0.5rem;
+}
+
+.summary-card p {
+    margin: 0.4rem 0;
+    font-size: 1rem;
+    color: #cccccc;
+}
+
+.summary-card strong {
+    color: #ffffff
+}
+
+.summary-actions {
+    margin-top: 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.summary-actions .download-link {
+    display: inline-block;
+    padding: 8px 14px;
+    border-radius: 8px;
+    background-color: #2a2a2a;
+    color: #61dafb;
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.summary-actions .download-link:hover {
+    background-color: #3a3a3a;
+}

@@ -1,14 +1,20 @@
-import React, { useState } from 'react'
+import React, { use, useState } from 'react'
 import './App.css'
 import SelectionPanel from './components/SelectionPanel'
-import QuestionList from './components/QuestionList'
+import SummaryCard from './components/SummaryCard'
 import axios from 'axios'
 
 
 function App() {
+  const [selectedBoard, setSelectedBoard] = useState(null)
+  const [selectedSubject, setSelectedSubject] = useState(null)
   const [selectedTopics, setSelectedTopics] = useState([])
   const [paperFilter, setPaperFilter] = useState('')
   const [selectedYears, setSelectedYears] = useState([])
+  const [pdfUrls, setPdfUrls] = useState({
+    questionsUrl: null,
+    markschemeUrl: null
+  })
 
   const toggleYear = (year) => {
     setSelectedYears((prevYears) => 
@@ -18,50 +24,34 @@ function App() {
     )
   }
 
-  const generatePDF = async () => {
-    if (selectedTopics.length === 0) {
-      alert('Please select topics first.')
-      return
-    }
-
+  const generatePDFs = async () => {
     try {
       // questions
+      console.log(selectedTopics)
       const qRes = await axios.post('/api/generate_pdf', {
-        topic_ids: selectedTopics,
+        topic_ids: selectedTopics.map(t => t.id),
         paper: paperFilter,
-        years: selectedYears
+        years: selectedYears,
+        type: 'questions',
       }, { responseType: 'blob' })
-
-      const qBlob = new Blob([qRes.data], { type: 'application/pdf' })
-      const qUrl = window.URL.createObjectURL(qBlob)
-
-      const qLink = document.createElement('a')
-      qLink.href = qUrl
-      qLink.setAttribute('download', 'questions.pdf')
-      document.body.appendChild(qLink)
-      qLink.click()
-      qLink.remove()
 
       // markscheme
       const mRes = await axios.post('/api/generate_markscheme', {
-        topic_ids: selectedTopics,
+        topic_ids: selectedTopics.map(t => t.id),
         paper: paperFilter,
-        years: selectedYears
+        years: selectedYears,
+        type: 'markscheme',
       }, { responseType: 'blob' })
+    
+    const questionsUrl = window.URL.createObjectURL(new Blob([qRes.data]))
+    const markschemeUrl = window.URL.createObjectURL(new Blob([mRes.data]))
 
-      const mBlob = new Blob([mRes.data], { type: 'application/pdf' })
-      const mUrl = window.URL.createObjectURL(mBlob)
-
-      const mLink = document.createElement('a')
-      mLink.href = mUrl
-      mLink.setAttribute('download', 'markscheme.pdf')
-      document.body.appendChild(mLink)
-      mLink.click()
-      mLink.remove()
-
+    setPdfUrls({
+      questionsUrl,
+      markschemeUrl
+    })
     } catch (err) {
-      console.error(err)
-      alert('Failed to generate PDF.')
+      console.error('Error generating pdfs:', err)
     }
   }
 
@@ -69,7 +59,9 @@ function App() {
     <div className='App'>
       <div className='left-panel'>
         <h1>PastPapers</h1>
-        <SelectionPanel onTopicsChange={({ topics, paper }) => {
+        <SelectionPanel onSelectionChange={({ board, subject, topics, paper }) => {
+          setSelectedBoard(board)
+          setSelectedSubject(subject)
           setSelectedTopics(topics)
           setPaperFilter(paper)
         }} />
@@ -88,11 +80,14 @@ function App() {
           ))}
         </div>
 
-          <button className='generate-button' onClick={generatePDF}>Generate PDF</button>
+          <button className='generate-button' onClick={generatePDFs}>Generate PDFs</button>
       </div>
 
       <div className='right-panel'>
-        <QuestionList
+        <SummaryCard
+          pdfUrls={pdfUrls}
+          board={selectedBoard}
+          subject={selectedSubject}
           topicIds={selectedTopics}
           paperFilter={paperFilter}
           selectedYears={selectedYears}
