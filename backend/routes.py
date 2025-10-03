@@ -108,6 +108,10 @@ def generate_pdf():
     if not questions:
         return jsonify({'error': 'No questions found'}), 404
     
+    print("Questions found:", len(questions))
+    for q in questions:
+        print("Q:", q.id, q.image_url)
+    
     images = []
     for q in questions:
         try:
@@ -123,6 +127,7 @@ def generate_pdf():
     pdf_buffer = io.BytesIO()
     images[0].save(pdf_buffer, save_all=True, append_images=images[1:], format='PDF')
     pdf_buffer.seek(0)
+    
 
     return send_file(pdf_buffer, mimetype='application/pdf', download_name='questions.pdf')
 

@@ -77,7 +77,7 @@ with app.app_context():
         ('AQA', 'Math', 'Trigonometry', '2022', '2', '4', 'https://example.com/trig_q4.png', 'https://example.com/trig_q4_ms.pdf'),
         ('AQA', 'Biology', 'Cells', '2023', '1', '3', 'https://example.com/cells_q3.png', 'https://example.com/cells_q3_ms.pdf'),
         ('AQA', 'Biology', 'Genetics', '2024', '1', '2', 'https://example.com/genetics_q2.png', 'https://example.com/genetics_q2_ms.pdf'),
-        ('CIE', 'Physics', 'Forces', '2020', '2', '3', 'https://cdn.gcdn.space/Guests%2Fd8b64039_q3.png', 'https://cdn.gcdn.space/Guests%2Fb5cc434b_ms3.png'),
+        ('CIE', 'Physics', 'Forces', '2020', '2', '3', 'https://cdn.gcdn.space/Guests%2F580317e4_image.png', 'https://cdn.gcdn.space/Guests%2F9386076e_image.png'),
         ('CIE', 'Physics', 'Forces', '2019', '4', '3', 'https://cdn.gcdn.space/Guests%2F7ce5c9a3_image.png', 'https://cdn.gcdn.space/Guests%2Ff252a76f_ms3a.png'),
     ]
 
